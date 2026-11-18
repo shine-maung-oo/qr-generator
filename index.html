@@ -1,0 +1,864 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CHID QR Code Generator</title>
+
+    <!-- QR Code Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #279EC5;
+            --primary-dark: #1684AA;
+            --primary-light: #E8F6FB;
+            --text-dark: #1E293B;
+            --text-gray: #64748B;
+            --border: #E2E8F0;
+            --white: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(135deg, #E8F6FB, #F8FCFE);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        button,
+        input {
+            font-family: inherit;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .card {
+            background: var(--white);
+            padding: 35px;
+            border-radius: 22px;
+            box-shadow: 0 10px 40px rgba(39, 158, 197, 0.12);
+            border: 1px solid rgba(39, 158, 197, 0.08);
+        }
+
+        /* Header */
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-icon {
+            width: 75px;
+            height: 75px;
+            background: var(--primary-light);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px;
+        }
+
+        .logo-icon img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+
+        .header h1 {
+            color: var(--text-dark);
+            font-size: 25px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: var(--text-gray);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .brand-line {
+            width: 45px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 10px;
+            margin: 15px auto 0;
+        }
+
+        /* Form */
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--text-dark);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            height: 52px;
+            padding: 0 15px;
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            font-size: 14px;
+            outline: none;
+            transition: 0.3s;
+            color: var(--text-dark);
+        }
+
+        .input-wrapper input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(39, 158, 197, 0.12);
+        }
+
+        .input-wrapper input::placeholder {
+            color: #94A3B8;
+        }
+
+        /* Generate Button */
+
+        .generate-btn {
+            width: 100%;
+            height: 52px;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: 11px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .generate-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(39, 158, 197, 0.2);
+        }
+
+        .generate-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Messages */
+
+        .error-message {
+            color: #DC2626;
+            font-size: 13px;
+            margin-top: 12px;
+            line-height: 1.5;
+        }
+
+        .success-message {
+            color: var(--primary-dark);
+            font-size: 13px;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+
+        /* QR Result */
+
+        .qr-result {
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .qr-result h3 {
+            font-size: 18px;
+            color: var(--text-dark);
+            margin-bottom: 18px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* QR Wrapper */
+
+        .qr-wrapper {
+            display: inline-block;
+            background: #FFFFFF;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+        }
+
+        #qrcode canvas {
+            display: block;
+            width: 100%;
+            max-width: 270px;
+            height: auto;
+        }
+
+        .generated-url {
+            margin-top: 16px;
+            color: var(--text-gray);
+            font-size: 13px;
+            line-height: 1.6;
+            word-break: break-all;
+        }
+
+        /* Buttons */
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .action-buttons button {
+            flex: 1;
+            height: 45px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .download-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+        }
+
+        .download-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .copy-btn {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            border: 1px solid #D3EDF6;
+        }
+
+        .copy-btn:hover {
+            background: #D7F0F8;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Footer */
+
+        footer {
+            text-align: center;
+            color: var(--text-gray);
+            font-size: 12px;
+            margin-top: 22px;
+        }
+
+        footer span {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        /* Mobile */
+
+        @media (max-width: 480px) {
+
+            body {
+                padding: 15px;
+            }
+
+            .card {
+                padding: 25px 20px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .action-buttons button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="card">
+
+            <!-- Header -->
+            <div class="header">
+
+                <div class="logo-icon">
+                    <img
+                        src="./chid-logo.png"
+                        alt="CHID Logo"
+                        id="headerLogo"
+                    >
+                </div>
+
+                <h1>CHID QR Generator</h1>
+
+                <p>
+                    Generate branded QR codes for your website
+                </p>
+
+                <div class="brand-line"></div>
+
+            </div>
+
+            <!-- URL Form -->
+            <div class="form-group">
+
+                <label for="urlInput">
+                    Website URL
+                </label>
+
+                <div class="input-wrapper">
+
+                    <input
+                        type="text"
+                        id="urlInput"
+                        placeholder="https://example.com"
+                        autocomplete="url"
+                    >
+
+                </div>
+
+            </div>
+
+            <!-- Generate Button -->
+            <button
+                type="button"
+                id="generateBtn"
+                class="generate-btn"
+            >
+                Generate QR Code
+            </button>
+
+            <!-- Error -->
+            <p
+                id="errorMessage"
+                class="error-message"
+                role="alert"
+            ></p>
+
+            <!-- QR Result -->
+            <div
+                id="qrResult"
+                class="qr-result hidden"
+            >
+
+                <h3>Your CHID QR Code</h3>
+
+                <div class="qr-wrapper">
+
+                    <div id="qrcode"></div>
+
+                </div>
+
+                <p
+                    id="generatedUrl"
+                    class="generated-url"
+                ></p>
+
+                <!-- Actions -->
+                <div class="action-buttons">
+
+                    <button
+                        type="button"
+                        id="downloadBtn"
+                        class="download-btn"
+                    >
+                        Download PNG
+                    </button>
+
+                    <button
+                        type="button"
+                        id="copyBtn"
+                        class="copy-btn"
+                    >
+                        Copy URL
+                    </button>
+
+                </div>
+
+                <p
+                    id="successMessage"
+                    class="success-message"
+                    role="status"
+                ></p>
+
+            </div>
+
+        </div>
+
+        <footer>
+            Powered by <span>CHID</span> | QR Code Generator
+        </footer>
+
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+
+        // ======================================
+        // CONFIGURATION
+        // ======================================
+
+        const CONFIG = {
+
+            primaryColor: "#279EC5",
+
+            backgroundColor: "#FFFFFF",
+
+            qrSize: 300,
+
+            whitePadding: 25,
+
+            logoWidth: 70,
+
+            logoHeight: 60,
+
+            logoPadding: 7,
+
+            logoPath: "./chid-logo.png"
+
+        };
+
+        // ======================================
+        // DOM ELEMENTS
+        // ======================================
+
+        const urlInput = document.getElementById("urlInput");
+
+        const generateBtn = document.getElementById("generateBtn");
+
+        const downloadBtn = document.getElementById("downloadBtn");
+
+        const copyBtn = document.getElementById("copyBtn");
+
+        const qrContainer = document.getElementById("qrcode");
+
+        const qrResult = document.getElementById("qrResult");
+
+        const errorMessage = document.getElementById("errorMessage");
+
+        const successMessage = document.getElementById("successMessage");
+
+        const generatedUrl = document.getElementById("generatedUrl");
+
+        // ======================================
+        // VARIABLES
+        // ======================================
+
+        let currentURL = "";
+
+        let finalQRCodeCanvas = null;
+
+        // ======================================
+        // LOAD CHID LOGO
+        // ======================================
+
+        const chidLogo = new Image();
+
+        chidLogo.src = CONFIG.logoPath;
+
+        chidLogo.onload = function () {
+
+            console.log("CHID Logo loaded successfully.");
+
+        };
+
+        chidLogo.onerror = function () {
+
+            console.error("Unable to load CHID Logo.");
+
+        };
+
+        // ======================================
+        // VALIDATE URL
+        // ======================================
+
+        function validateURL(value) {
+
+            let url = value.trim();
+
+            if (!url) {
+
+                throw new Error("Please enter a website URL.");
+
+            }
+
+            // Add HTTPS automatically
+            if (!/^https?:\/\//i.test(url)) {
+
+                url = "https://" + url;
+
+            }
+
+            try {
+
+                const parsedURL = new URL(url);
+
+                if (
+                    !["http:", "https:"].includes(parsedURL.protocol) ||
+                    !parsedURL.hostname.includes(".")
+                ) {
+
+                    throw new Error("Invalid URL");
+
+                }
+
+                return parsedURL.href;
+
+            } catch (error) {
+
+                throw new Error("Please enter a valid website URL.");
+
+            }
+
+        }
+
+        // ======================================
+        // GENERATE QR CODE
+        // ======================================
+
+        function generateQRCode() {
+
+            errorMessage.textContent = "";
+
+            successMessage.textContent = "";
+
+            const inputValue = urlInput.value.trim();
+
+            // Validate URL
+            try {
+
+                currentURL = validateURL(inputValue);
+
+            } catch (error) {
+
+                errorMessage.textContent = error.message;
+
+                urlInput.focus();
+
+                return;
+
+            }
+
+            // Check QR Library
+            if (typeof QRCode === "undefined") {
+
+                errorMessage.textContent =
+                    "QR Library failed to load. Check your internet connection.";
+
+                return;
+
+            }
+
+            // Check Logo
+            if (!chidLogo.complete || !chidLogo.naturalWidth) {
+
+                errorMessage.textContent =
+                    "CHID Logo is not loaded. Please check chid-logo.png.";
+
+                return;
+
+            }
+
+            // Temporary QR Container
+            const tempContainer = document.createElement("div");
+
+            // Generate Original QR
+            new QRCode(tempContainer, {
+
+                text: currentURL,
+
+                width: CONFIG.qrSize,
+
+                height: CONFIG.qrSize,
+
+                colorDark: CONFIG.primaryColor,
+
+                colorLight: CONFIG.backgroundColor,
+
+                correctLevel: QRCode.CorrectLevel.H
+
+            });
+
+            const sourceCanvas = tempContainer.querySelector("canvas");
+
+            if (!sourceCanvas) {
+
+                errorMessage.textContent =
+                    "Unable to generate QR Code.";
+
+                return;
+
+            }
+
+            // Create Final Canvas
+            createBrandedQRCode(sourceCanvas);
+
+        }
+
+        // ======================================
+        // CREATE BRANDED QR CODE
+        // ======================================
+
+        function createBrandedQRCode(sourceCanvas) {
+
+            const padding = CONFIG.whitePadding;
+
+            const size = CONFIG.qrSize;
+
+            const finalSize = size + padding * 2;
+
+            // Create Canvas
+            const canvas = document.createElement("canvas");
+
+            canvas.width = finalSize;
+
+            canvas.height = finalSize;
+
+            const ctx = canvas.getContext("2d");
+
+            // White Background
+            ctx.fillStyle = "#FFFFFF";
+
+            ctx.fillRect(
+                0,
+                0,
+                finalSize,
+                finalSize
+            );
+
+            // Draw QR Code
+            ctx.drawImage(
+                sourceCanvas,
+                padding,
+                padding,
+                size,
+                size
+            );
+
+            // ==================================
+            // CHID LOGO CONFIGURATION
+            // ==================================
+
+            const logoWidth = CONFIG.logoWidth;
+
+            const logoHeight = CONFIG.logoHeight;
+
+            const logoPadding = CONFIG.logoPadding;
+
+            const logoBoxWidth = logoWidth + logoPadding * 1;
+
+            const logoBoxHeight = logoHeight + logoPadding * 2;
+
+            // Center Position
+            const centerX = finalSize / 2;
+
+            const centerY = finalSize / 2;
+
+            const logoX = centerX - logoWidth / 2;
+
+            const logoY = centerY - logoHeight / 2;
+
+            const boxX = centerX - logoBoxWidth / 2;
+
+            const boxY = centerY - logoBoxHeight / 2;
+
+            // ==================================
+            // WHITE BACKGROUND BEHIND LOGO
+            // ==================================
+
+            ctx.fillStyle = "#FFFFFF";
+
+            ctx.beginPath();
+
+            ctx.roundRect(
+                boxX,
+                boxY,
+                logoBoxWidth,
+                logoBoxHeight,
+                8
+            );
+
+            ctx.fill();
+
+            // ==================================
+            // DRAW CHID LOGO
+            // ==================================
+
+            ctx.drawImage(
+                chidLogo,
+                logoX,
+                logoY,
+                logoWidth,
+                logoHeight
+            );
+
+            // ==================================
+            // DISPLAY FINAL QR CODE
+            // ==================================
+
+            qrContainer.innerHTML = "";
+
+            canvas.style.width = "100%";
+
+            canvas.style.maxWidth = "300px";
+
+            canvas.style.height = "auto";
+
+            canvas.style.display = "block";
+
+            qrContainer.appendChild(canvas);
+
+            finalQRCodeCanvas = canvas;
+
+            // Display URL
+            generatedUrl.textContent = currentURL;
+
+            // Show Result
+            qrResult.classList.remove("hidden");
+
+        }
+
+        // ======================================
+        // GENERATE BUTTON
+        // ======================================
+
+        generateBtn.addEventListener("click", function () {
+
+            generateQRCode();
+
+        });
+
+        // ======================================
+        // ENTER KEY
+        // ======================================
+
+        urlInput.addEventListener("keydown", function (event) {
+
+            if (event.key === "Enter") {
+
+                generateQRCode();
+
+            }
+
+        });
+
+        // ======================================
+        // DOWNLOAD PNG
+        // ======================================
+
+        downloadBtn.addEventListener("click", function () {
+
+            if (!finalQRCodeCanvas) {
+
+                errorMessage.textContent =
+                    "Please generate QR Code first.";
+
+                return;
+
+            }
+
+            try {
+
+                const link = document.createElement("a");
+
+                link.download = "CHID-QR-Code.png";
+
+                link.href = finalQRCodeCanvas.toDataURL("image/png");
+
+                link.click();
+
+                successMessage.textContent =
+                    "CHID QR Code downloaded successfully!";
+
+            } catch (error) {
+
+                errorMessage.textContent =
+                    "Unable to download QR Code.";
+
+            }
+
+        });
+
+        // ======================================
+        // COPY URL
+        // ======================================
+
+        copyBtn.addEventListener("click", async function () {
+
+            if (!currentURL) return;
+
+            try {
+
+                await navigator.clipboard.writeText(currentURL);
+
+                successMessage.textContent =
+                    "URL copied successfully!";
+
+                copyBtn.textContent = "Copied!";
+
+                setTimeout(function () {
+
+                    copyBtn.textContent = "Copy URL";
+
+                }, 2000);
+
+            } catch (error) {
+
+                errorMessage.textContent =
+                    "Unable to copy URL. Use HTTPS or localhost.";
+
+            }
+
+        });
+
+    </script>
+
+</body>
+
+</html>

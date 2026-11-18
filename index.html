@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>CHID QR Code Generator</title>
+    <title>QR Code Generator</title>
 
     <!-- QR Code Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -72,18 +71,22 @@
             align-items: center;
             justify-content: center;
             margin: 0 auto 18px;
+            color: var(--primary);
+            font-size: 38px;
+            font-weight: bold;
+            overflow: hidden;
         }
 
         .logo-icon img {
-            width: 60px;
-            height: 60px;
+            width: 100%;
+            height: 100%;
             object-fit: contain;
+            padding: 5px;
         }
 
         .header h1 {
             color: var(--text-dark);
             font-size: 25px;
-            font-weight: 700;
             margin-bottom: 10px;
         }
 
@@ -104,7 +107,7 @@
         /* Form */
 
         .form-group {
-            margin-bottom: 18px;
+            margin-bottom: 20px;
         }
 
         .form-group label {
@@ -115,11 +118,7 @@
             margin-bottom: 10px;
         }
 
-        .input-wrapper {
-            position: relative;
-        }
-
-        .input-wrapper input {
+        .input-wrapper input[type="text"] {
             width: 100%;
             height: 52px;
             padding: 0 15px;
@@ -136,8 +135,93 @@
             box-shadow: 0 0 0 3px rgba(39, 158, 197, 0.12);
         }
 
-        .input-wrapper input::placeholder {
-            color: #94A3B8;
+        /* Logo Upload */
+
+        .upload-area {
+            border: 2px dashed #B7DDEB;
+            background: #F8FCFE;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .upload-icon {
+            font-size: 30px;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .upload-area p {
+            font-size: 13px;
+            color: var(--text-gray);
+            line-height: 1.6;
+        }
+
+        .upload-area strong {
+            color: var(--primary);
+        }
+
+        .upload-area input {
+            display: none;
+        }
+
+        .logo-preview-container {
+            display: none;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+            padding: 12px;
+            background: var(--primary-light);
+            border-radius: 10px;
+        }
+
+        .logo-preview-container.show {
+            display: flex;
+        }
+
+        .logo-preview {
+            width: 65px;
+            height: 65px;
+            object-fit: contain;
+            background: white;
+            border-radius: 8px;
+            padding: 5px;
+            border: 1px solid var(--border);
+        }
+
+        .logo-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .logo-info strong {
+            display: block;
+            font-size: 13px;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+            word-break: break-all;
+        }
+
+        .logo-info span {
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+
+        .remove-logo-btn {
+            background: #FEE2E2;
+            color: #DC2626;
+            border: none;
+            padding: 8px 10px;
+            border-radius: 7px;
+            font-size: 12px;
+            cursor: pointer;
         }
 
         /* Generate Button */
@@ -146,7 +230,7 @@
             width: 100%;
             height: 52px;
             background: var(--primary);
-            color: var(--white);
+            color: white;
             border: none;
             border-radius: 11px;
             font-size: 15px;
@@ -161,8 +245,10 @@
             box-shadow: 0 5px 15px rgba(39, 158, 197, 0.2);
         }
 
-        .generate-btn:active {
-            transform: scale(0.98);
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
 
         /* Messages */
@@ -213,7 +299,7 @@
 
         .qr-wrapper {
             display: inline-block;
-            background: #FFFFFF;
+            background: white;
             padding: 12px;
             border: 1px solid var(--border);
             border-radius: 15px;
@@ -223,7 +309,7 @@
         #qrcode canvas {
             display: block;
             width: 100%;
-            max-width: 270px;
+            max-width: 300px;
             height: auto;
         }
 
@@ -294,7 +380,6 @@
         /* Mobile */
 
         @media (max-width: 480px) {
-
             body {
                 padding: 15px;
             }
@@ -316,6 +401,7 @@
             }
         }
     </style>
+
 </head>
 
 <body>
@@ -327,15 +413,11 @@
             <!-- Header -->
             <div class="header">
 
-                <div class="logo-icon">
-                    <img
-                        src="./chid-logo.png"
-                        alt="CHID Logo"
-                        id="headerLogo"
-                    >
-                </div>
+                <!-- <div class="logo-icon" id="headerLogoContainer">
+                    <span>QR</span>
+                </div> -->
 
-                <h1>CHID QR Generator</h1>
+                <h1>QR Generator</h1>
 
                 <p>
                     Generate branded QR codes for your website
@@ -345,7 +427,7 @@
 
             </div>
 
-            <!-- URL Form -->
+            <!-- Website URL -->
             <div class="form-group">
 
                 <label for="urlInput">
@@ -354,40 +436,72 @@
 
                 <div class="input-wrapper">
 
-                    <input
-                        type="text"
-                        id="urlInput"
-                        placeholder="https://example.com"
-                        autocomplete="url"
-                    >
+                    <input type="text" id="urlInput" placeholder="https://example.com" autocomplete="url">
+
+                </div>
+
+            </div>
+
+            <!-- Logo Upload -->
+            <div class="form-group">
+
+                <label>
+                    Upload QR Logo (Optional)
+                </label>
+
+                <label class="upload-area" for="logoInput">
+
+                    <input type="file" id="logoInput" accept="image/png,image/jpeg,image/webp">
+
+                    <!-- <div class="upload-icon">
+                        ↑
+                    </div> -->
+
+                    <p>
+                        <strong>Click to upload logo</strong>
+                        <br>
+                        PNG, JPG, JPEG, WEBP
+                        <br>
+                        Recommended: Square or transparent logo
+                    </p>
+
+                </label>
+
+                <!-- Logo Preview -->
+                <div class="logo-preview-container" id="logoPreviewContainer">
+
+                    <img id="logoPreview" class="logo-preview" alt="Logo Preview">
+
+                    <div class="logo-info">
+
+                        <strong id="logoFileName">
+                            Logo uploaded
+                        </strong>
+
+                        <span id="logoFileSize"></span>
+
+                    </div>
+
+                    <button type="button" class="remove-logo-btn" id="removeLogoBtn">
+                        Remove
+                    </button>
 
                 </div>
 
             </div>
 
             <!-- Generate Button -->
-            <button
-                type="button"
-                id="generateBtn"
-                class="generate-btn"
-            >
+            <button type="button" id="generateBtn" class="generate-btn">
                 Generate QR Code
             </button>
 
-            <!-- Error -->
-            <p
-                id="errorMessage"
-                class="error-message"
-                role="alert"
-            ></p>
+            <!-- Error Message -->
+            <p id="errorMessage" class="error-message" role="alert"></p>
 
             <!-- QR Result -->
-            <div
-                id="qrResult"
-                class="qr-result hidden"
-            >
+            <div id="qrResult" class="qr-result hidden">
 
-                <h3>Your CHID QR Code</h3>
+                <h3>Your QR Code</h3>
 
                 <div class="qr-wrapper">
 
@@ -395,86 +509,82 @@
 
                 </div>
 
-                <p
-                    id="generatedUrl"
-                    class="generated-url"
-                ></p>
+                <p id="generatedUrl" class="generated-url"></p>
 
-                <!-- Actions -->
+                <!-- Action Buttons -->
                 <div class="action-buttons">
 
-                    <button
-                        type="button"
-                        id="downloadBtn"
-                        class="download-btn"
-                    >
+                    <button type="button" id="downloadBtn" class="download-btn">
                         Download PNG
                     </button>
 
-                    <button
-                        type="button"
-                        id="copyBtn"
-                        class="copy-btn"
-                    >
+                    <button type="button" id="copyBtn" class="copy-btn">
                         Copy URL
                     </button>
 
                 </div>
 
-                <p
-                    id="successMessage"
-                    class="success-message"
-                    role="status"
-                ></p>
+                <p id="successMessage" class="success-message" role="status"></p>
 
             </div>
 
         </div>
 
         <footer>
-            Powered by <span>CHID</span> | QR Code Generator
+            Powered by <span>DEV</span> | QR Code Generator
         </footer>
 
     </div>
 
-    <!-- JavaScript -->
     <script>
 
-        // ======================================
+        // =========================================
         // CONFIGURATION
-        // ======================================
+        // =========================================
 
         const CONFIG = {
-
-            primaryColor: "#279EC5",
-
+            primaryColor: "#000000",
             backgroundColor: "#FFFFFF",
 
-            qrSize: 300,
+            qrSize: 600,
+            whitePadding: 40,
 
-            whitePadding: 25,
+            logoWidth: 120,
+            logoHeight: 100,
+            logoPadding: 15,
 
-            logoWidth: 70,
-
-            logoHeight: 60,
-
-            logoPadding: 7,
-
-            logoPath: "./chid-logo.png"
-
+            maxLogoSize: 5 * 1024 * 1024
         };
 
-        // ======================================
+        // =========================================
         // DOM ELEMENTS
-        // ======================================
+        // =========================================
 
         const urlInput = document.getElementById("urlInput");
+
+        const logoInput = document.getElementById("logoInput");
 
         const generateBtn = document.getElementById("generateBtn");
 
         const downloadBtn = document.getElementById("downloadBtn");
 
         const copyBtn = document.getElementById("copyBtn");
+
+        const removeLogoBtn = document.getElementById("removeLogoBtn");
+
+        const headerLogoContainer = document.getElementById(
+            "headerLogoContainer"
+        );
+
+        const logoPreview = document.getElementById("logoPreview");
+
+        const logoPreviewContainer = document.getElementById(
+            "logoPreviewContainer"
+        );
+
+        const logoFileName = document.getElementById("logoFileName");
+
+        const logoFileSize = document.getElementById("logoFileSize");
 
         const qrContainer = document.getElementById("qrcode");
 
@@ -486,37 +596,158 @@
 
         const generatedUrl = document.getElementById("generatedUrl");
 
-        // ======================================
+        // =========================================
         // VARIABLES
-        // ======================================
+        // =========================================
 
         let currentURL = "";
 
+        let uploadedLogo = null;
+
         let finalQRCodeCanvas = null;
 
-        // ======================================
-        // LOAD CHID LOGO
-        // ======================================
+        let logoObjectURL = null;
 
-        const chidLogo = new Image();
+        // =========================================
+        // LOGO UPLOAD
+        // =========================================
 
-        chidLogo.src = CONFIG.logoPath;
+        logoInput.addEventListener("change", function (event) {
 
-        chidLogo.onload = function () {
+            const file = event.target.files[0];
 
-            console.log("CHID Logo loaded successfully.");
+            if (!file) return;
 
-        };
+            errorMessage.textContent = "";
 
-        chidLogo.onerror = function () {
+            successMessage.textContent = "";
 
-            console.error("Unable to load CHID Logo.");
+            // Validate image type
+            const allowedTypes = [
+                "image/png",
+                "image/jpeg",
+                "image/webp"
+            ];
 
-        };
+            if (!allowedTypes.includes(file.type)) {
 
-        // ======================================
+                errorMessage.textContent =
+                    "Please upload PNG, JPG or WEBP image.";
+
+                logoInput.value = "";
+
+                return;
+            }
+
+            // Validate file size
+            if (file.size > CONFIG.maxLogoSize) {
+
+                errorMessage.textContent =
+                    "Logo size must be less than 5 MB.";
+
+                logoInput.value = "";
+
+                return;
+            }
+
+            // Remove previous object URL
+            if (logoObjectURL) {
+
+                URL.revokeObjectURL(logoObjectURL);
+
+            }
+
+            // Create object URL
+            logoObjectURL = URL.createObjectURL(file);
+
+            const image = new Image();
+
+            image.onload = function () {
+
+                uploadedLogo = image;
+
+                // Show logo preview
+                logoPreview.src = logoObjectURL;
+
+                logoFileName.textContent = file.name;
+
+                logoFileSize.textContent =
+                    (file.size / 1024).toFixed(2) + " KB";
+
+                logoPreviewContainer.classList.add("show");
+
+                // Update Header Logo
+                headerLogoContainer.innerHTML = "";
+
+                const headerImage = document.createElement("img");
+
+                headerImage.src = logoObjectURL;
+
+                headerImage.alt = "Uploaded Logo";
+
+                headerLogoContainer.appendChild(headerImage);
+
+                // Reset previous QR
+                qrResult.classList.add("hidden");
+
+                finalQRCodeCanvas = null;
+
+                successMessage.textContent =
+                    "Logo uploaded successfully!";
+
+            };
+
+            image.onerror = function () {
+
+                errorMessage.textContent =
+                    "Unable to load image. Please try another file.";
+
+                removeLogo();
+
+            };
+
+            image.src = logoObjectURL;
+
+        });
+
+        // =========================================
+        // REMOVE LOGO
+        // =========================================
+
+        function removeLogo() {
+
+            uploadedLogo = null;
+
+            logoInput.value = "";
+
+            logoPreview.src = "";
+
+            logoPreviewContainer.classList.remove("show");
+
+            headerLogoContainer.innerHTML = "<span>QR</span>";
+
+            if (logoObjectURL) {
+
+                URL.revokeObjectURL(logoObjectURL);
+
+                logoObjectURL = null;
+
+            }
+
+            finalQRCodeCanvas = null;
+
+            qrResult.classList.add("hidden");
+
+            successMessage.textContent =
+                "Logo removed. QR Code can be generated without a logo.";
+
+        }
+
+        removeLogoBtn.addEventListener("click", removeLogo);
+
+        // =========================================
         // VALIDATE URL
-        // ======================================
+        // =========================================
 
         function validateURL(value) {
 
@@ -558,9 +789,9 @@
 
         }
 
-        // ======================================
+        // =========================================
         // GENERATE QR CODE
-        // ======================================
+        // =========================================
 
         function generateQRCode() {
 
@@ -589,61 +820,66 @@
             if (typeof QRCode === "undefined") {
 
                 errorMessage.textContent =
-                    "QR Library failed to load. Check your internet connection.";
+                    "QR Library failed to load. Check internet connection.";
 
                 return;
 
             }
 
-            // Check Logo
-            if (!chidLogo.complete || !chidLogo.naturalWidth) {
+            generateBtn.disabled = true;
 
-                errorMessage.textContent =
-                    "CHID Logo is not loaded. Please check chid-logo.png.";
+            generateBtn.textContent = "Generating...";
 
-                return;
+            try {
+
+                // Temporary QR Container
+                const tempContainer = document.createElement("div");
+
+                // Generate Original QR
+                new QRCode(tempContainer, {
+
+                    text: currentURL,
+
+                    width: CONFIG.qrSize,
+
+                    height: CONFIG.qrSize,
+
+                    colorDark: CONFIG.primaryColor,
+
+                    colorLight: CONFIG.backgroundColor,
+
+                    correctLevel: QRCode.CorrectLevel.H
+
+                });
+
+                const sourceCanvas = tempContainer.querySelector("canvas");
+
+                if (!sourceCanvas) {
+
+                    throw new Error("Unable to generate QR Code.");
+
+                }
+
+                // Create final branded QR
+                createBrandedQRCode(sourceCanvas);
+
+            } catch (error) {
+
+                errorMessage.textContent = error.message;
+
+            } finally {
+
+                generateBtn.disabled = false;
+
+                generateBtn.textContent = "Generate QR Code";
 
             }
-
-            // Temporary QR Container
-            const tempContainer = document.createElement("div");
-
-            // Generate Original QR
-            new QRCode(tempContainer, {
-
-                text: currentURL,
-
-                width: CONFIG.qrSize,
-
-                height: CONFIG.qrSize,
-
-                colorDark: CONFIG.primaryColor,
-
-                colorLight: CONFIG.backgroundColor,
-
-                correctLevel: QRCode.CorrectLevel.H
-
-            });
-
-            const sourceCanvas = tempContainer.querySelector("canvas");
-
-            if (!sourceCanvas) {
-
-                errorMessage.textContent =
-                    "Unable to generate QR Code.";
-
-                return;
-
-            }
-
-            // Create Final Canvas
-            createBrandedQRCode(sourceCanvas);
 
         }
 
-        // ======================================
+        // =========================================
         // CREATE BRANDED QR CODE
-        // ======================================
+        // =========================================
 
         function createBrandedQRCode(sourceCanvas) {
 
@@ -653,7 +889,7 @@
 
             const finalSize = size + padding * 2;
 
-            // Create Canvas
+            // Create final canvas
             const canvas = document.createElement("canvas");
 
             canvas.width = finalSize;
@@ -662,7 +898,7 @@
 
             const ctx = canvas.getContext("2d");
 
-            // White Background
+            // White background
             ctx.fillStyle = "#FFFFFF";
 
             ctx.fillRect(
@@ -681,66 +917,72 @@
                 size
             );
 
-            // ==================================
-            // CHID LOGO CONFIGURATION
-            // ==================================
+            // =====================================
+            // DRAW UPLOADED LOGO
+            // =====================================
 
-            const logoWidth = CONFIG.logoWidth;
 
-            const logoHeight = CONFIG.logoHeight;
+            if (uploadedLogo) {
 
-            const logoPadding = CONFIG.logoPadding;
+                const maxWidth = CONFIG.logoWidth;
+                const maxHeight = CONFIG.logoHeight;
 
-            const logoBoxWidth = logoWidth + logoPadding * 1;
+                // Preserve original aspect ratio
+                const scale = Math.min(
+                    maxWidth / uploadedLogo.naturalWidth,
+                    maxHeight / uploadedLogo.naturalHeight
+                );
 
-            const logoBoxHeight = logoHeight + logoPadding * 2;
+                const logoWidth = uploadedLogo.naturalWidth * scale;
+                const logoHeight = uploadedLogo.naturalHeight * scale;
 
-            // Center Position
-            const centerX = finalSize / 2;
+                const logoPadding = CONFIG.logoPadding;
 
-            const centerY = finalSize / 2;
+                const boxWidth = logoWidth + logoPadding * 1.5;
+                const boxHeight = logoHeight + logoPadding * 2;
 
-            const logoX = centerX - logoWidth / 2;
+                // Center position
+                const centerX = finalSize / 2;
+                const centerY = finalSize / 2;
 
-            const logoY = centerY - logoHeight / 2;
+                const logoX = centerX - logoWidth / 2;
+                const logoY = centerY - logoHeight / 2;
 
-            const boxX = centerX - logoBoxWidth / 2;
+                const boxX = centerX - boxWidth / 2;
+                const boxY = centerY - boxHeight / 2;
 
-            const boxY = centerY - logoBoxHeight / 2;
+                // High quality rendering
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = "high";
 
-            // ==================================
-            // WHITE BACKGROUND BEHIND LOGO
-            // ==================================
+                // White background behind logo
+                ctx.fillStyle = "#FFFFFF";
 
-            ctx.fillStyle = "#FFFFFF";
+                ctx.beginPath();
 
-            ctx.beginPath();
+                ctx.roundRect(
+                    boxX,
+                    boxY,
+                    boxWidth,
+                    boxHeight,
+                    12
+                );
 
-            ctx.roundRect(
-                boxX,
-                boxY,
-                logoBoxWidth,
-                logoBoxHeight,
-                8
-            );
+                ctx.fill();
 
-            ctx.fill();
+                // Draw logo without distortion
+                ctx.drawImage(
+                    uploadedLogo,
+                    logoX,
+                    logoY,
+                    logoWidth,
+                    logoHeight
+                );
+            }
 
-            // ==================================
-            // DRAW CHID LOGO
-            // ==================================
-
-            ctx.drawImage(
-                chidLogo,
-                logoX,
-                logoY,
-                logoWidth,
-                logoHeight
-            );
-
-            // ==================================
-            // DISPLAY FINAL QR CODE
-            // ==================================
+            // =====================================
+            // DISPLAY FINAL QR
+            // =====================================
 
             qrContainer.innerHTML = "";
 
@@ -759,14 +1001,17 @@
             // Display URL
             generatedUrl.textContent = currentURL;
 
-            // Show Result
+            // Show result
             qrResult.classList.remove("hidden");
+
+            successMessage.textContent =
+                "QR Code generated successfully!";
 
         }
 
-        // ======================================
+        // =========================================
         // GENERATE BUTTON
-        // ======================================
+        // =========================================
 
         generateBtn.addEventListener("click", function () {
 
@@ -774,9 +1019,9 @@
 
         });
 
-        // ======================================
+        // =========================================
         // ENTER KEY
-        // ======================================
+        // =========================================
 
         urlInput.addEventListener("keydown", function (event) {
 
@@ -788,9 +1033,9 @@
 
         });
 
-        // ======================================
+        // =========================================
         // DOWNLOAD PNG
-        // ======================================
+        // =========================================
 
         downloadBtn.addEventListener("click", function () {
 
@@ -807,14 +1052,14 @@
 
                 const link = document.createElement("a");
 
-                link.download = "CHID-QR-Code.png";
+                link.download = "QR-Code.png";
 
                 link.href = finalQRCodeCanvas.toDataURL("image/png");
 
                 link.click();
 
                 successMessage.textContent =
-                    "CHID QR Code downloaded successfully!";
+                    "QR Code downloaded successfully!";
 
             } catch (error) {
 
@@ -825,9 +1070,9 @@
 
         });
 
-        // ======================================
+        // =========================================
         // COPY URL
-        // ======================================
+        // =========================================
 
         copyBtn.addEventListener("click", async function () {
 
